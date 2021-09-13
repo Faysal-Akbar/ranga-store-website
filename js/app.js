@@ -1,3 +1,6 @@
+/*------------------------------
+      Load Product form API
+-------------------------------*/
 const loadProducts = () => {
   const url = `https://fakestoreapi.com/products`;
   fetch(url)
@@ -6,7 +9,9 @@ const loadProducts = () => {
 };
 loadProducts();
 
-// show all product in UI 
+/*---------------------------------
+      show all product in UI
+----------------------------------*/
 const showProducts = (products) => {
   const allProducts = products.map((pd) => pd);
   for (const product of allProducts) {
@@ -19,9 +24,11 @@ const showProducts = (products) => {
       </div>
       <h3>${product.title}</h3>
       <p>Category: ${product.category}</p>
+      <p>Rating : ${product.rating.rate}</p>
+      <p>count : ${product.rating.count}</p>
       <h2>Price: $ ${product.price}</h2>
       <button onclick="addToCart(${product.id},${product.price})" id="addToCart-btn" class="buy-now btn btn-success">add to cart</button>
-      <button id="details-btn" class="btn btn-danger">Details</button></div>
+      <button onclick="productDetails(${product.id})" id="details-btn" class="btn btn-danger">Details</button></div>
       `;
     document.getElementById("all-products").appendChild(div);
   }
@@ -41,7 +48,9 @@ const getInputValue = (id) => {
   return converted;
 };
 
-// main price update function
+/*---------------------------------
+      main price update function
+----------------------------------*/
 const updatePrice = (id, value) => {
   const convertedOldPrice = getInputValue(id);
   const convertPrice = parseFloat(value);
@@ -49,12 +58,16 @@ const updatePrice = (id, value) => {
   document.getElementById(id).innerText = total.toFixed(2);
 };
 
-// set innerText function
+/*--------------------------------
+      set innerText function
+---------------------------------*/
 const setInnerText = (id, value) => {
   document.getElementById(id).innerText = value.toFixed(2);
 };
 
-// update delivery charge and total Tax
+/*--------------------------------------------
+    update delivery charge and total Tax
+---------------------------------------------*/
 const updateTaxAndCharge = () => {
   const priceConverted = getInputValue("price");
   if (priceConverted > 200) {
@@ -72,9 +85,40 @@ const updateTaxAndCharge = () => {
   updateTotal();
 };
 
-//grandTotal update function
+/*----------------------------------
+      grandTotal update function
+-----------------------------------*/
 const updateTotal = () => {
   const grandTotal = 
   getInputValue("price") + getInputValue("delivery-charge") + getInputValue("total-tax");
   document.getElementById("total").innerText = grandTotal.toFixed(2);
 };
+
+/*-------------------------------------------
+      single product details and call API
+--------------------------------------------*/
+const productDetails = (id) => {
+  const url = `https://fakestoreapi.com/products/${id}`;
+  fetch(url)
+  .then(res => res.json())
+  .then(data => displayProductDetails(data))
+}
+
+/*--------------------------------------
+      display single product details
+---------------------------------------*/
+const displayProductDetails = details => {
+  const singleDetailsContainer = document.getElementById('singleDetails');
+  singleDetailsContainer.innerHTML = '';
+  const div = document.createElement('div');
+  div.innerHTML = `
+  <img src="${details.image}" class="product-image" alt="...">
+  <h3>${details.title}</h3>
+  <p>Category: ${details.category}</p>
+  <p>Rating : ${details.rating.rate}</p>
+  <p>count : ${details.rating.count}</p>
+  <h3>Price: $ ${details.price}</h3>
+  <a href="#" class="btn btn-info">Add to Cart</a>
+  `
+  singleDetailsContainer.appendChild(div);
+}
